@@ -1,0 +1,39 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": ["Hi", "Hello", "Hey", "Assalamualaikum", "Good morning"],
+      "responses": ["Hello! How can I assist you today?", "Hi there! What symptoms are you experiencing?"]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": ["Bye", "Goodbye", "See you later"],
+      "responses": ["Goodbye! Stay healthy.", "Take care!"]
+    },
+    {
+      "tag": "thanks",
+      "patterns": ["Thanks", "Thank you", "Terima kasih"],
+      "responses": ["You're welcome!", "Glad I could help!"]
+    },
+    {
+      "tag": "symptoms",
+      "patterns": ["I have a fever", "My head hurts", "I'm coughing", "I feel weak"],
+      "responses": [
+        "Please drink warm water and take enough rest.",
+        "Monitor your symptoms. If things get worse, consider visiting a doctor."
+      ]
+    },
+    {
+      "tag": "covid",
+      "patterns": [
+        "I lost my sense of smell",
+        "I have covid symptoms",
+        "I think I have covid"
+      ],
+      "responses": [
+        "Loss of smell can be a Covid-19 symptom. Please test yourself and isolate.",
+        "Consider getting a Covid test and follow health protocols."
+      ]
+    }
+  ]
+}
