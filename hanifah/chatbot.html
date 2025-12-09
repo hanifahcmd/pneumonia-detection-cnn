@@ -3,72 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chatbot Kesehatan Gratis</title>
+<title>Chatbot Kesehatan Offline</title>
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #eef2f3;
-        padding: 20px;
-    }
-
+    body { font-family: Arial, sans-serif; background: #f2f2f2; padding: 20px; }
     .chat-container {
-        width: 380px;
-        margin: auto;
-        background: #fff;
-        border-radius: 12px;
-        padding: 12px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        width: 380px; margin: auto; background: #fff; border-radius: 10px;
+        padding: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
-
     .chat-box {
-        height: 420px;
-        overflow-y: auto;
-        border: 1px solid #ddd;
-        padding: 12px;
-        border-radius: 10px;
-        background: #fafafa;
+        height: 400px; overflow-y: auto; border: 1px solid #ddd;
+        padding: 10px; border-radius: 8px;
     }
-
-    .msg {
-        padding: 10px 12px;
-        border-radius: 10px;
-        margin: 6px 0;
-        max-width: 80%;
-        white-space: pre-wrap;
+    .message {
+        padding: 8px 12px; border-radius: 10px; margin: 5px 0;
+        width: fit-content; max-width: 80%; white-space: pre-wrap;
     }
-
-    .me {
-        background: #4CAF50;
-        color: white;
-        margin-left: auto;
-    }
-
-    .bot {
-        background: #e0e0e0;
-        color: black;
-    }
-
-    .chat-input {
-        display: flex;
-        margin-top: 12px;
-    }
-
+    .me { background: #4CAF50; color: white; margin-left: auto; }
+    .bot { background: #e0e0e0; color: black; }
+    .chat-input { display: flex; margin-top: 10px; }
     input {
-        flex: 1;
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
+        flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #ccc;
     }
-
     button {
-        margin-left: 10px;
-        padding: 10px 15px;
-        background: #4CAF50;
-        border: none;
-        color: white;
-        border-radius: 5px;
-        cursor: pointer;
+        margin-left: 10px; padding: 8px 15px; background: #4CAF50;
+        border: none; color: white; border-radius: 5px; cursor: pointer;
     }
 </style>
 </head>
@@ -79,111 +38,138 @@
     <div class="chat-box" id="chatBox"></div>
 
     <div class="chat-input">
-        <input type="text" id="messageInput" placeholder="Tanyakan tentang kesehatan...">
+        <input type="text" id="messageInput" placeholder="Tanyakan penyakit... contoh: hipertensi, diare, covid" />
         <button onclick="sendMessage()">Kirim</button>
     </div>
 </div>
 
 <script>
 
-// ===========================
-// DATABASE JAWABAN KESEHATAN
-// ===========================
-const healthDB = {
-    "demam": "Demam adalah peningkatan suhu tubuh di atas 38°C. Biasanya disebabkan infeksi virus atau bakteri. Istirahat dan minum banyak air sangat disarankan.",
-    "batuk": "Batuk bisa terjadi karena infeksi, alergi, iritasi, atau asap. Jika batuk lebih dari 2 minggu, periksakan ke fasilitas kesehatan.",
-    "flu": "Flu disebabkan virus influenza. Gejalanya demam, pilek, batuk, dan pegal. Istirahat cukup dan minum air hangat dapat membantu.",
-    "hipertensi": "Hipertensi adalah tekanan darah tinggi. Hindari garam berlebih, rutin olahraga, dan kelola stres.",
-    "darah tinggi": "Darah tinggi sama dengan hipertensi. Perlu gaya hidup sehat dan kontrol rutin.",
-    "diabetes": "Diabetes terjadi karena kadar gula tinggi dalam darah. Biasanya terkait pola makan, kurang aktivitas, atau faktor genetik.",
-    "sakit kepala": "Sakit kepala dapat disebabkan kurang tidur, stres, tegang, atau dehidrasi. Minum air dan istirahat biasanya membantu.",
-    "stres": "Stres dapat dikurangi dengan relaksasi, pernapasan dalam, olahraga ringan, dan tidur cukup.",
-    "maag": "Maag adalah iritasi lambung. Hindari makanan pedas, asam, kopi, dan makan tidak teratur.",
-    "asam lambung": "Asam lambung berlebih menyebabkan nyeri ulu hati. Hindari makanan pemicu dan jangan langsung berbaring setelah makan.",
-    "diare": "Diare sering disebabkan infeksi makanan/minuman. Banyak minum untuk mencegah dehidrasi."
+// DATABASE PENYAKIT LENGKAP (OFFLINE)
+const penyakitDB = {
+    "demam": {
+        deskripsi: "Demam adalah peningkatan suhu tubuh di atas 37.5°C.",
+        gejala: ["Suhu tubuh naik", "Menggigil", "Lemas", "Sakit kepala"],
+        saran: "Kompres hangat, minum banyak air, istirahat."
+    },
+    "batuk": {
+        deskripsi: "Batuk adalah reaksi tubuh mengeluarkan iritan dari saluran napas.",
+        gejala: ["Tenggorokan gatal", "Batuk kering/berdahak", "Pilek", "Serak"],
+        saran: "Minum hangat, madu, hindari udara dingin."
+    },
+    "flu": {
+        deskripsi: "Flu adalah infeksi virus pada saluran pernapasan.",
+        gejala: ["Pilek", "Demam", "Bersin", "Batuk"],
+        saran: "Istirahat, vitamin C, minum hangat."
+    },
+    "asma": {
+        deskripsi: "Asma adalah penyempitan saluran napas yang kambuhan.",
+        gejala: ["Sesak napas", "Dada berat", "Batuk malam hari", "Wheezing"],
+        saran: "Gunakan inhaler jika resep dokter, hindari pemicu."
+    },
+    "diabetes": {
+        deskripsi: "Diabetes adalah kadar gula darah kronis yang tinggi.",
+        gejala: ["Sering haus", "Sering kencing", "BB turun", "Luka sulit sembuh"],
+        saran: "Atur makan, olahraga, kontrol rutin dokter."
+    },
+    "maag": {
+        deskripsi: "Maag disebabkan iritasi atau peningkatan asam lambung.",
+        gejala: ["Nyeri ulu hati", "Mual", "Kembung", "Cepat kenyang"],
+        saran: "Hindari pedas, kopi, asam, jangan telat makan."
+    },
+
+    // —————  PENYAKIT TAMBAHAN  —————
+
+    "hipertensi": {
+        deskripsi: "Hipertensi adalah tekanan darah yang tinggi secara terus-menerus.",
+        gejala: ["Sakit kepala", "Penglihatan kabur", "Mudah lelah", "Pusing"],
+        saran: "Kurangi garam, olahraga, cek tekanan darah rutin."
+    },
+
+    "kolesterol": {
+        deskripsi: "Kolesterol tinggi adalah penumpukan lemak dalam darah.",
+        gejala: ["Sering pegal", "Dada tidak nyaman", "Cepat lelah"],
+        saran: "Kurangi gorengan, perbanyak sayur & olahraga."
+    },
+
+    "ispa": {
+        deskripsi: "ISPA adalah infeksi pada saluran pernapasan bagian atas.",
+        gejala: ["Batuk", "Pilek", "Demam", "Sakit tenggorokan"],
+        saran: "Minum hangat, istirahat, masker bila batuk."
+    },
+
+    "diare": {
+        deskripsi: "Diare adalah buang air besar cair lebih dari 3x sehari.",
+        gejala: ["BAB cair", "Perut mulas", "Dehidrasi", "Mual"],
+        saran: "Minum oralit, hindari makanan pedas/berminyak."
+    },
+
+    "tipes": {
+        deskripsi: "Tipes adalah infeksi bakteri Salmonella typhi.",
+        gejala: ["Demam naik turun", "Diare/konstipasi", "Lemas", "Sakit perut"],
+        saran: "Istirahat total, makan lembut, periksa dokter."
+    },
+
+    "covid": {
+        deskripsi: "COVID-19 adalah penyakit akibat virus SARS-CoV-2.",
+        gejala: ["Demam", "Batuk kering", "Sesak", "Hilang penciuman"],
+        saran: "Istirahat, masker, isolasi, minum cukup, segera periksa jika sesak."
+    },
+
+    "stroke": {
+        deskripsi: "Stroke terjadi saat aliran darah ke otak terganggu.",
+        gejala: ["Mulut mencong", "Lemah satu sisi tubuh", "Bicara pelo", "Pusing berat"],
+        saran: "Segera ke IGD (darurat)."
+    },
+
+    "dermatitis": {
+        deskripsi: "Dermatitis adalah peradangan kulit.",
+        gejala: ["Gatal", "Kemerahan", "Kulit bersisik", "Kadang bengkak"],
+        saran: "Hindari pemicu, gunakan pelembap, kompres dingin."
+    }
 };
 
-// ===========================
-// LOGIKA AI GRATIS (offline)
-// Menggunakan pencocokan keyword + similarity
-// ===========================
-function getAIReply(question) {
-    const msg = question.toLowerCase().trim();
 
-    // Salam
-    if (msg.includes("halo") || msg.includes("hai") || msg.includes("hi")) {
-        return "Halo! Saya adalah chatbot kesehatan gratis. Apa yang ingin kamu tanyakan?";
-    }
+// ————— FUNGSI CHATBOT —————
 
-    // Terima kasih
-    if (msg.includes("makasih") || msg.includes("terima kasih")) {
-        return "Sama-sama! Senang bisa membantu.";
-    }
-
-    // Cari kecocokan langsung
-    for (let key in healthDB) {
-        if (msg.includes(key)) {
-            return healthDB[key];
-        }
-    }
-
-    // Smart Similarity Checking (AI ringan)
-    const words = msg.split(" ");
-    for (let key in healthDB) {
-        for (let w of words) {
-            if (similarity(w, key) > 0.6) {
-                return healthDB[key];
-            }
-        }
-    }
-
-    // Jika tidak ditemukan
-    return "Maaf, saya hanya bisa memberi informasi kesehatan umum. Coba gunakan kata kunci seperti: demam, batuk, flu, hipertensi, maag, stres, dll.";
-}
-
-// Fungsi cek kemiripan kata (Levenshtein Light)
-function similarity(a, b) {
-    a = a.toLowerCase();
-    b = b.toLowerCase();
-
-    let matches = 0;
-    let minLength = Math.min(a.length, b.length);
-
-    for (let i = 0; i < minLength; i++) {
-        if (a[i] === b[i]) matches++;
-    }
-
-    return matches / Math.max(a.length, b.length);
-}
-
-// ===========================
-// UI CHAT
-// ===========================
 function sendMessage() {
     const input = document.getElementById("messageInput");
     const text = input.value.trim();
-    if (text === "") return;
-
+    if (!text) return;
     addMessage(text, "me");
-    input.value = "";
 
-    setTimeout(() => {
-        addMessage(getAIReply(text), "bot");
-    }, 500);
+    setTimeout(() => addMessage(botReply(text), "bot"), 500);
+    input.value = "";
 }
 
 function addMessage(text, sender) {
-    const chatBox = document.getElementById("chatBox");
+    const box = document.getElementById("chatBox");
     const msg = document.createElement("div");
+    msg.className = "message " + sender;
+    msg.textContent = text;
+    box.appendChild(msg);
+    box.scrollTop = box.scrollHeight;
+}
 
-    msg.classList.add("msg", sender);
-    msg.innerText = text;
+function botReply(text) {
+    text = text.toLowerCase();
 
-    chatBox.appendChild(msg);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    for (let nama in penyakitDB) {
+        if (text.includes(nama)) {
+            let p = penyakitDB[nama];
+            return (
+                `📌 Informasi tentang *${nama.toUpperCase()}*\n\n` +
+                `📝 Deskripsi:\n${p.deskripsi}\n\n` +
+                `⚠️ Gejala:\n- ${p.gejala.join("\n- ")}\n\n` +
+                `💡 Saran:\n${p.saran}\n\n` +
+                `⚠️ Catatan: Ini hanya informasi umum, bukan diagnosis.`
+            );
+        }
+    }
+
+    return "Maaf, saya belum mengenali penyakit itu. Coba tanyakan: demam, tipes, covid, ispa, stroke, diare, hipertensi, maag, asma, diabetes.";
 }
 
 </script>
-
 </body>
 </html>
