@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chatbot Pintar</title>
+
+<style>
+    body { font-family: Arial; background: #f2f2f2; padding: 20px; }
+    .chat-container { width: 350px; margin: auto; background: #fff; padding: 10px; border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2); }
+    .chat-box { height: 350px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
+    .message { padding: 8px 12px; border-radius: 10px; margin: 5px 0; width: fit-content; max-width: 80%; }
+    .me { background: #4CAF50; color: white; margin-left: auto; }
+    .bot { background: #e0e0e0; color: black; }
+    .chat-input { display: flex; margin-top: 10px; }
+    input { flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
+    button { margin-left: 10px; padding: 8px 15px; background:#4CAF50; border:none; color:white;
+    border-radius: 5px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-box" id="chatBox"></div>
+
+    <div class="chat-input">
+        <input id="messageInput" type="text" placeholder="Ketik pertanyaan...">
+        <button onclick="sendMessage()">Kirim</button>
+    </div>
+</div>
+
+<script>
+
+// =====================
+// FUNGSI KIRIM PESAN
+// =====================
+function sendMessage() {
+    const input = document.getElementById("messageInput");
+    const chatBox = document.getElementById("chatBox");
+    let text = input.value.trim();
+
+    if (text === "") return;
+
+    // tampilkan pesan user
+    addMessage(text, "me");
+
+    // bot menjawab
+    setTimeout(() => {
+        addMessage(botSmartReply(text), "bot");
+    }, 600);
+
+    input.value = "";
+}
+
+// =====================
+// FUNGSI MENAMBAH PESAN
+// =====================
+function addMessage(text, sender) {
+    const chatBox = document.getElementById("chatBox");
+    const msg = document.createElement("div");
+    msg.classList.add("message", sender);
+    msg.innerText = text;
+    chatBox.appendChild(msg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// =====================
+// BOT CERDAS
+// =====================
+function botSmartReply(question) {
+    question = question.toLowerCase();
+
+    // 1. Salam umum
+    if (question.includes("hai") || question.includes("halo") || question.includes("hi")) {
+        return "Halo! Ada yang ingin kamu tanyakan?";
+    }
+
+    // 2. Tanya nama
+    if (question.includes("nama kamu") || question.includes("siapa kamu")) {
+        return "Saya chatbot yang dibuat khusus untuk menjawab pertanyaanmu 😄";
+    }
+
+    // 3. Tanya kabar
+    if (question.includes("apa kabar") || question.includes("gimana kabarmu")) {
+        return "Saya baik! Semoga kamu juga baik ya 😊";
+    }
+
+    // 4. Tanya pelajaran (AI SMART MATCH)
+    if (question.includes("apa itu")) {
+        let topik = question.replace("apa itu", "").trim();
+        return "“" + topik + "” adalah sesuatu yang bisa memiliki banyak arti. Bisa jelaskan lebih spesifik?";
+    }
+
+    // 5. Pertanyaan matematika sederhana
+    try {
+        if (question.match(/^[0-9+\-*/(). ]+$/)) {
+            return "Hasilnya adalah: " + eval(question);
+        }
+    } catch {}
+
+    // 6. Jawaban default pintar
+    return "Hmm... aku belum mengerti pertanyaan itu. Coba jelaskan lebih detail ya! 😊";
+}
+
+</script>
+
+</body>
+</html>
