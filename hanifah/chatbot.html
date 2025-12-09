@@ -3,106 +3,172 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chatbot Pintar</title>
+<title>Chatbot Kesehatan</title>
 
 <style>
-    body { font-family: Arial; background: #f2f2f2; padding: 20px; }
-    .chat-container { width: 350px; margin: auto; background: #fff; padding: 10px; border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2); }
-    .chat-box { height: 350px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
-    .message { padding: 8px 12px; border-radius: 10px; margin: 5px 0; width: fit-content; max-width: 80%; }
-    .me { background: #4CAF50; color: white; margin-left: auto; }
-    .bot { background: #e0e0e0; color: black; }
-    .chat-input { display: flex; margin-top: 10px; }
-    input { flex: 1; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
-    button { margin-left: 10px; padding: 8px 15px; background:#4CAF50; border:none; color:white;
-    border-radius: 5px; cursor:pointer; }
+    body {
+        font-family: Arial, sans-serif;
+        background: #eef2f3;
+        padding: 20px;
+    }
+
+    .chat-container {
+        width: 370px;
+        margin: auto;
+        background: #fff;
+        border-radius: 10px;
+        padding: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .chat-box {
+        height: 380px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 8px;
+        background: #fafafa;
+    }
+
+    .message {
+        padding: 8px 12px;
+        border-radius: 10px;
+        margin: 5px 0;
+        width: fit-content;
+        max-width: 80%;
+    }
+
+    .me {
+        background: #4CAF50;
+        color: white;
+        margin-left: auto;
+    }
+
+    .bot {
+        background: #e0e0e0;
+    }
+
+    .chat-input {
+        display: flex;
+        margin-top: 10px;
+    }
+
+    input {
+        flex: 1;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        margin-left: 10px;
+        padding: 8px 15px;
+        background: #4CAF50;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 </style>
 </head>
+
 <body>
 
 <div class="chat-container">
     <div class="chat-box" id="chatBox"></div>
 
     <div class="chat-input">
-        <input id="messageInput" type="text" placeholder="Ketik pertanyaan...">
+        <input type="text" id="messageInput" placeholder="Tanyakan tentang kesehatan...">
         <button onclick="sendMessage()">Kirim</button>
     </div>
 </div>
 
 <script>
-
-// =====================
-// FUNGSI KIRIM PESAN
-// =====================
 function sendMessage() {
     const input = document.getElementById("messageInput");
     const chatBox = document.getElementById("chatBox");
-    let text = input.value.trim();
 
+    let text = input.value.trim();
     if (text === "") return;
 
-    // tampilkan pesan user
     addMessage(text, "me");
 
-    // bot menjawab
     setTimeout(() => {
-        addMessage(botSmartReply(text), "bot");
-    }, 600);
+        addMessage(botReply(text), "bot");
+    }, 500);
 
     input.value = "";
 }
 
-// =====================
-// FUNGSI MENAMBAH PESAN
-// =====================
 function addMessage(text, sender) {
     const chatBox = document.getElementById("chatBox");
     const msg = document.createElement("div");
+
     msg.classList.add("message", sender);
     msg.innerText = text;
+
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// =====================
-// BOT CERDAS
-// =====================
-function botSmartReply(question) {
-    question = question.toLowerCase();
+// ===========================
+// LOGIKA BOT KESEHATAN
+// ===========================
+function botReply(text) {
+    text = text.toLowerCase();
 
-    // 1. Salam umum
-    if (question.includes("hai") || question.includes("halo") || question.includes("hi")) {
-        return "Halo! Ada yang ingin kamu tanyakan?";
+    // Demam
+    if (text.includes("demam")) {
+        return "Demam adalah kondisi ketika suhu tubuh naik di atas normal (lebih dari 38°C). Biasanya disebabkan infeksi, kelelahan, atau peradangan.";
     }
 
-    // 2. Tanya nama
-    if (question.includes("nama kamu") || question.includes("siapa kamu")) {
-        return "Saya chatbot yang dibuat khusus untuk menjawab pertanyaanmu 😄";
+    // Batuk
+    if (text.includes("batuk")) {
+        return "Batuk bisa disebabkan infeksi virus, alergi, iritasi, atau asap. Jika batuk lebih dari 2 minggu, sebaiknya periksa ke fasilitas kesehatan.";
     }
 
-    // 3. Tanya kabar
-    if (question.includes("apa kabar") || question.includes("gimana kabarmu")) {
-        return "Saya baik! Semoga kamu juga baik ya 😊";
+    // Flu
+    if (text.includes("flu")) {
+        return "Flu disebabkan oleh virus influenza. Gejalanya meliputi demam, pilek, batuk, dan sakit kepala. Istirahat dan cukup minum sangat dianjurkan.";
     }
 
-    // 4. Tanya pelajaran (AI SMART MATCH)
-    if (question.includes("apa itu")) {
-        let topik = question.replace("apa itu", "").trim();
-        return "“" + topik + "” adalah sesuatu yang bisa memiliki banyak arti. Bisa jelaskan lebih spesifik?";
+    // Hipertensi
+    if (text.includes("hipertensi") || text.includes("darah tinggi")) {
+        return "Hipertensi adalah tekanan darah yang lebih tinggi dari normal. Jaga pola makan, kurangi garam, olahraga, dan hindari stres.";
     }
 
-    // 5. Pertanyaan matematika sederhana
-    try {
-        if (question.match(/^[0-9+\-*/(). ]+$/)) {
-            return "Hasilnya adalah: " + eval(question);
-        }
-    } catch {}
+    // Diabetes
+    if (text.includes("diabetes")) {
+        return "Diabetes terjadi ketika kadar gula darah tinggi. Biasanya karena kurangnya insulin atau tubuh tidak bisa menggunakan insulin dengan baik.";
+    }
 
-    // 6. Jawaban default pintar
-    return "Hmm... aku belum mengerti pertanyaan itu. Coba jelaskan lebih detail ya! 😊";
+    // Kesehatan umum
+    if (text.includes("kesehatan")) {
+        return "Untuk menjaga kesehatan: makan bergizi seimbang, cukup tidur, minum air cukup, olahraga rutin, dan hindari stres.";
+    }
+
+    // Sakit kepala
+    if (text.includes("sakit kepala")) {
+        return "Sakit kepala dapat muncul karena kurang tidur, stres, dehidrasi, atau ketegangan otot. Cobalah istirahat dan minum air.";
+    }
+
+    // Stres
+    if (text.includes("stres")) {
+        return "Stres bisa diatasi dengan istirahat, latihan napas, olahraga ringan, dan tidur cukup.";
+    }
+
+    // Salam
+    if (text.includes("hai") || text.includes("halo") || text.includes("hi")) {
+        return "Halo! Ada pertanyaan kesehatan yang ingin kamu tanyakan?";
+    }
+
+    // Terima kasih
+    if (text.includes("makasih") || text.includes("terima kasih")) {
+        return "Sama-sama! Senang membantu.";
+    }
+
+    return "Maaf, saya hanya bisa memberikan informasi kesehatan umum. Untuk diagnosis atau pengobatan, sebaiknya periksa ke tenaga medis.";
 }
-
 </script>
 
 </body>
