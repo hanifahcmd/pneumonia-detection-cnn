@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Chatbot Kesehatan</title>
+<title>Chatbot Kesehatan Gratis</title>
 
 <style>
     body {
@@ -86,11 +86,80 @@
 
 <script>
 
-// Masukkan API KEY kamu di sini:
-const API_KEY = "MASUKKAN_API_KEY_KAMU_DI_SINI";
+// ===========================
+// DATABASE JAWABAN KESEHATAN
+// ===========================
+const healthDB = {
+    "demam": "Demam adalah peningkatan suhu tubuh di atas 38°C. Biasanya disebabkan infeksi virus atau bakteri. Istirahat dan minum banyak air sangat disarankan.",
+    "batuk": "Batuk bisa terjadi karena infeksi, alergi, iritasi, atau asap. Jika batuk lebih dari 2 minggu, periksakan ke fasilitas kesehatan.",
+    "flu": "Flu disebabkan virus influenza. Gejalanya demam, pilek, batuk, dan pegal. Istirahat cukup dan minum air hangat dapat membantu.",
+    "hipertensi": "Hipertensi adalah tekanan darah tinggi. Hindari garam berlebih, rutin olahraga, dan kelola stres.",
+    "darah tinggi": "Darah tinggi sama dengan hipertensi. Perlu gaya hidup sehat dan kontrol rutin.",
+    "diabetes": "Diabetes terjadi karena kadar gula tinggi dalam darah. Biasanya terkait pola makan, kurang aktivitas, atau faktor genetik.",
+    "sakit kepala": "Sakit kepala dapat disebabkan kurang tidur, stres, tegang, atau dehidrasi. Minum air dan istirahat biasanya membantu.",
+    "stres": "Stres dapat dikurangi dengan relaksasi, pernapasan dalam, olahraga ringan, dan tidur cukup.",
+    "maag": "Maag adalah iritasi lambung. Hindari makanan pedas, asam, kopi, dan makan tidak teratur.",
+    "asam lambung": "Asam lambung berlebih menyebabkan nyeri ulu hati. Hindari makanan pemicu dan jangan langsung berbaring setelah makan.",
+    "diare": "Diare sering disebabkan infeksi makanan/minuman. Banyak minum untuk mencegah dehidrasi."
+};
 
-// Fungsi kirim pesan
-async function sendMessage() {
+// ===========================
+// LOGIKA AI GRATIS (offline)
+// Menggunakan pencocokan keyword + similarity
+// ===========================
+function getAIReply(question) {
+    const msg = question.toLowerCase().trim();
+
+    // Salam
+    if (msg.includes("halo") || msg.includes("hai") || msg.includes("hi")) {
+        return "Halo! Saya adalah chatbot kesehatan gratis. Apa yang ingin kamu tanyakan?";
+    }
+
+    // Terima kasih
+    if (msg.includes("makasih") || msg.includes("terima kasih")) {
+        return "Sama-sama! Senang bisa membantu.";
+    }
+
+    // Cari kecocokan langsung
+    for (let key in healthDB) {
+        if (msg.includes(key)) {
+            return healthDB[key];
+        }
+    }
+
+    // Smart Similarity Checking (AI ringan)
+    const words = msg.split(" ");
+    for (let key in healthDB) {
+        for (let w of words) {
+            if (similarity(w, key) > 0.6) {
+                return healthDB[key];
+            }
+        }
+    }
+
+    // Jika tidak ditemukan
+    return "Maaf, saya hanya bisa memberi informasi kesehatan umum. Coba gunakan kata kunci seperti: demam, batuk, flu, hipertensi, maag, stres, dll.";
+}
+
+// Fungsi cek kemiripan kata (Levenshtein Light)
+function similarity(a, b) {
+    a = a.toLowerCase();
+    b = b.toLowerCase();
+
+    let matches = 0;
+    let minLength = Math.min(a.length, b.length);
+
+    for (let i = 0; i < minLength; i++) {
+        if (a[i] === b[i]) matches++;
+    }
+
+    return matches / Math.max(a.length, b.length);
+}
+
+// ===========================
+// UI CHAT
+// ===========================
+function sendMessage() {
     const input = document.getElementById("messageInput");
     const text = input.value.trim();
     if (text === "") return;
@@ -98,62 +167,20 @@ async function sendMessage() {
     addMessage(text, "me");
     input.value = "";
 
-    addMessage("Mengetik...", "bot", true);
-
-    const reply = await aiReply(text);
-    removeTyping();
-
-    addMessage(reply, "bot");
+    setTimeout(() => {
+        addMessage(getAIReply(text), "bot");
+    }, 500);
 }
 
-// Tampilkan pesan ke layar
-function addMessage(text, sender, typing=false) {
+function addMessage(text, sender) {
     const chatBox = document.getElementById("chatBox");
     const msg = document.createElement("div");
 
     msg.classList.add("msg", sender);
-    if (typing) msg.id = "typing";
-
     msg.innerText = text;
+
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-// Hapus "typing..."
-function removeTyping() {
-    const t = document.getElementById("typing");
-    if (t) t.remove();
-}
-
-// Fungsi AI
-async function aiReply(userMsg) {
-    try {
-        const res = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + API_KEY
-            },
-            body: JSON.stringify({
-                model: "gpt-4o-mini",
-                messages: [
-                    {
-                        role: "system",
-                        content: "Kamu adalah chatbot kesehatan yang memberikan informasi kesehatan umum. Jangan berikan diagnosis atau obat. Hanya edukasi umum."
-                    },
-                    {
-                        role: "user",
-                        content: userMsg
-                    }
-                ]
-            })
-        });
-
-        const data = await res.json();
-        return data.choices[0].message.content;
-    } catch (error) {
-        return "Terjadi kesalahan. Pastikan API Key benar.";
-    }
 }
 
 </script>
