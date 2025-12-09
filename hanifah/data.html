@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Chatbot</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+        }
+
+        .chat-container {
+            width: 400px;
+            height: 600px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            margin: 50px auto;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            max-width: 80%;
+        }
+
+        .user {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+        }
+
+        .bot {
+            background: #ececec;
+            color: #333;
+            margin-right: auto;
+        }
+
+        .input-area {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="chat-container">
+        <div class="header">AI Chatbot</div>
+
+        <div class="chat-box" id="chatBox"></div>
+
+        <div class="input-area">
+            <input id="userInput" type="text" placeholder="Ketik pesan..." />
+            <button onclick="sendMessage()">Kirim</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            let input = document.getElementById("userInput");
+            let message = input.value.trim();
+            if (message === "") return;
+
+            addMessage(message, "user");
+            input.value = "";
+
+            // Simulasi bot (jawaban statis)
+            setTimeout(() => {
+                let botReply = getBotReply(message);
+                addMessage(botReply, "bot");
+            }, 500);
+        }
+
+        function addMessage(text, sender) {
+            let chatBox = document.getElementById("chatBox");
+            let msg = document.createElement("div");
+            msg.classList.add("message", sender);
+            msg.textContent = text;
+            chatBox.appendChild(msg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Contoh respons AI sederhana (bisa dihubungkan ke API nanti)
+        function getBotReply(message) {
+            message = message.toLowerCase();
+
+            if (message.includes("halo") || message.includes("hi")) {
+                return "Halo! Ada yang bisa saya bantu?";
+            } 
+            else if (message.includes("nama")) {
+                return "Saya adalah chatbot AI sederhana.";
+            }
+            else if (message.includes("apa kabar")) {
+                return "Saya baik! Terima kasih sudah bertanya 😊";
+            }
+            return "Maaf, saya belum mengerti. Coba tanya hal lain.";
+        }
+    </script>
+
+</body>
+</html>

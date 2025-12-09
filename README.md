@@ -1,1 +1,1 @@
-# pneumonia-detection-cnn
+mboh ra reti
