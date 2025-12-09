@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chatbot Kesehatan</title>
+<title>AI Chatbot Kesehatan</title>
 
 <style>
     body {
@@ -13,29 +13,29 @@
     }
 
     .chat-container {
-        width: 370px;
+        width: 380px;
         margin: auto;
         background: #fff;
-        border-radius: 10px;
-        padding: 10px;
+        border-radius: 12px;
+        padding: 12px;
         box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
 
     .chat-box {
-        height: 380px;
+        height: 420px;
         overflow-y: auto;
         border: 1px solid #ddd;
-        padding: 10px;
-        border-radius: 8px;
+        padding: 12px;
+        border-radius: 10px;
         background: #fafafa;
     }
 
-    .message {
-        padding: 8px 12px;
+    .msg {
+        padding: 10px 12px;
         border-radius: 10px;
-        margin: 5px 0;
-        width: fit-content;
+        margin: 6px 0;
         max-width: 80%;
+        white-space: pre-wrap;
     }
 
     .me {
@@ -46,23 +46,24 @@
 
     .bot {
         background: #e0e0e0;
+        color: black;
     }
 
     .chat-input {
         display: flex;
-        margin-top: 10px;
+        margin-top: 12px;
     }
 
     input {
         flex: 1;
-        padding: 8px;
+        padding: 10px;
         border-radius: 5px;
         border: 1px solid #ccc;
     }
 
     button {
         margin-left: 10px;
-        padding: 8px 15px;
+        padding: 10px 15px;
         background: #4CAF50;
         border: none;
         color: white;
@@ -84,91 +85,77 @@
 </div>
 
 <script>
-function sendMessage() {
-    const input = document.getElementById("messageInput");
-    const chatBox = document.getElementById("chatBox");
 
-    let text = input.value.trim();
+// Masukkan API KEY kamu di sini:
+const API_KEY = "MASUKKAN_API_KEY_KAMU_DI_SINI";
+
+// Fungsi kirim pesan
+async function sendMessage() {
+    const input = document.getElementById("messageInput");
+    const text = input.value.trim();
     if (text === "") return;
 
     addMessage(text, "me");
-
-    setTimeout(() => {
-        addMessage(botReply(text), "bot");
-    }, 500);
-
     input.value = "";
+
+    addMessage("Mengetik...", "bot", true);
+
+    const reply = await aiReply(text);
+    removeTyping();
+
+    addMessage(reply, "bot");
 }
 
-function addMessage(text, sender) {
+// Tampilkan pesan ke layar
+function addMessage(text, sender, typing=false) {
     const chatBox = document.getElementById("chatBox");
     const msg = document.createElement("div");
 
-    msg.classList.add("message", sender);
-    msg.innerText = text;
+    msg.classList.add("msg", sender);
+    if (typing) msg.id = "typing";
 
+    msg.innerText = text;
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// ===========================
-// LOGIKA BOT KESEHATAN
-// ===========================
-function botReply(text) {
-    text = text.toLowerCase();
-
-    // Demam
-    if (text.includes("demam")) {
-        return "Demam adalah kondisi ketika suhu tubuh naik di atas normal (lebih dari 38°C). Biasanya disebabkan infeksi, kelelahan, atau peradangan.";
-    }
-
-    // Batuk
-    if (text.includes("batuk")) {
-        return "Batuk bisa disebabkan infeksi virus, alergi, iritasi, atau asap. Jika batuk lebih dari 2 minggu, sebaiknya periksa ke fasilitas kesehatan.";
-    }
-
-    // Flu
-    if (text.includes("flu")) {
-        return "Flu disebabkan oleh virus influenza. Gejalanya meliputi demam, pilek, batuk, dan sakit kepala. Istirahat dan cukup minum sangat dianjurkan.";
-    }
-
-    // Hipertensi
-    if (text.includes("hipertensi") || text.includes("darah tinggi")) {
-        return "Hipertensi adalah tekanan darah yang lebih tinggi dari normal. Jaga pola makan, kurangi garam, olahraga, dan hindari stres.";
-    }
-
-    // Diabetes
-    if (text.includes("diabetes")) {
-        return "Diabetes terjadi ketika kadar gula darah tinggi. Biasanya karena kurangnya insulin atau tubuh tidak bisa menggunakan insulin dengan baik.";
-    }
-
-    // Kesehatan umum
-    if (text.includes("kesehatan")) {
-        return "Untuk menjaga kesehatan: makan bergizi seimbang, cukup tidur, minum air cukup, olahraga rutin, dan hindari stres.";
-    }
-
-    // Sakit kepala
-    if (text.includes("sakit kepala")) {
-        return "Sakit kepala dapat muncul karena kurang tidur, stres, dehidrasi, atau ketegangan otot. Cobalah istirahat dan minum air.";
-    }
-
-    // Stres
-    if (text.includes("stres")) {
-        return "Stres bisa diatasi dengan istirahat, latihan napas, olahraga ringan, dan tidur cukup.";
-    }
-
-    // Salam
-    if (text.includes("hai") || text.includes("halo") || text.includes("hi")) {
-        return "Halo! Ada pertanyaan kesehatan yang ingin kamu tanyakan?";
-    }
-
-    // Terima kasih
-    if (text.includes("makasih") || text.includes("terima kasih")) {
-        return "Sama-sama! Senang membantu.";
-    }
-
-    return "Maaf, saya hanya bisa memberikan informasi kesehatan umum. Untuk diagnosis atau pengobatan, sebaiknya periksa ke tenaga medis.";
+// Hapus "typing..."
+function removeTyping() {
+    const t = document.getElementById("typing");
+    if (t) t.remove();
 }
+
+// Fungsi AI
+async function aiReply(userMsg) {
+    try {
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + API_KEY
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [
+                    {
+                        role: "system",
+                        content: "Kamu adalah chatbot kesehatan yang memberikan informasi kesehatan umum. Jangan berikan diagnosis atau obat. Hanya edukasi umum."
+                    },
+                    {
+                        role: "user",
+                        content: userMsg
+                    }
+                ]
+            })
+        });
+
+        const data = await res.json();
+        return data.choices[0].message.content;
+    } catch (error) {
+        return "Terjadi kesalahan. Pastikan API Key benar.";
+    }
+}
+
 </script>
 
 </body>
